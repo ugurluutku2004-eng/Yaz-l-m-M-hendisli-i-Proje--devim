@@ -1,0 +1,65 @@
+@model Appointment
+@{
+    ViewData["Title"] = "Randevu Detayı";
+}
+<h2>@ViewData["Title"]</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Tarih / Saat</dt>
+    <dd class="col-sm-9">@Model.ScheduledAt.ToLocalTime().ToString("g")</dd>
+
+    <dt class="col-sm-3">Süre</dt>
+    <dd class="col-sm-9">@Model.DurationMinutes dakika</dd>
+
+    <dt class="col-sm-3">Doktor</dt>
+    <dd class="col-sm-9">@Model.Doctor?.User?.FullName (@Model.Doctor?.Specialty?.Name)</dd>
+
+    <dt class="col-sm-3">Hasta</dt>
+    <dd class="col-sm-9">@Model.Patient?.User?.FullName</dd>
+
+    <dt class="col-sm-3">Durum</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+
+    <dt class="col-sm-3">Başvuru Nedeni</dt>
+    <dd class="col-sm-9">@Model.Reason</dd>
+
+    <dt class="col-sm-3">Doktor Notları</dt>
+    <dd class="col-sm-9">@Model.DoctorNotes</dd>
+</dl>
+
+@if (Model.Status != AppointmentStatus.Completed && Model.Status != AppointmentStatus.Cancelled)
+{
+    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button class="btn btn-danger" onclick="return confirm('Randevu iptal edilsin mi?')">İptal Et</button>
+    </form>
+}
+
+@if (User.IsInRole(Roles.Doctor) || User.IsInRole(Roles.Admin))
+{
+    <hr />
+    <h4>Durum Güncelle</h4>
+    <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post">
+        @Html.AntiForgeryToken()
+        <div class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">Yeni Durum</label>
+                <select name="status" class="form-select">
+                    @foreach (var s in Enum.GetValues<AppointmentStatus>())
+                    {
+                        <option value="@((int)s)" selected="@(Model.Status == s)">@s</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Doktor Notları</label>
+                <input name="doctorNotes" class="form-control" value="@Model.DoctorNotes" />
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary">Güncelle</button>
+            </div>
+        </div>
+    </form>
+}
+
+<a asp-action="Index" class="btn btn-link mt-3">← Geri</a>

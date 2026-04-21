@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="jumbotron p-5 bg-light rounded-3 mb-4">
+    <h1 class="display-5">Klinik Yönetim Sistemine Hoş Geldiniz</h1>
+    <p class="lead">Hastalar, doktorlar ve klinik yöneticileri için entegre bir randevu ve hasta takip platformu.</p>
+    <hr class="my-4">
+    <p>Rolünüze göre randevu oluşturabilir, takviminizi yönetebilir ve tıbbi kayıtlara erişebilirsiniz.</p>
+    <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Login">Giriş Yap</a>
+    <a class="btn btn-outline-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">Kayıt Ol</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Hasta</h5>
+                <p class="card-text">Uzmanlık alanına göre doktor bulun, uygun saatlerde online randevu oluşturun, geçmiş muayene kayıtlarınızı inceleyin.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Doktor</h5>
+                <p class="card-text">Günlük randevu takviminizi görüntüleyin, muayene sonrası tıbbi kayıt ve reçete ekleyin, randevu durumunu güncelleyin.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Yönetici</h5>
+                <p class="card-text">Kullanıcı ve rol yönetimi, sistem istatistikleri, tüm randevuların raporlanması ve klinik işleyiş takibi.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-4">
+    <strong>Demo Hesaplar:</strong>
+    <ul class="mb-0">
+        <li>Yönetici: <code>admin@klinik.local</code> / <code>Admin!234</code></li>
+        <li>Doktor: <code>doktor@klinik.local</code> / <code>Doktor!234</code></li>
+        <li>Hasta: <code>hasta@klinik.local</code> / <code>Hasta!234</code></li>
+    </ul>
+</div>

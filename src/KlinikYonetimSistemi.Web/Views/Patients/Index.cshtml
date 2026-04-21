@@ -1,0 +1,22 @@
+@model IEnumerable<Patient>
+@{
+    ViewData["Title"] = "Hastalar";
+}
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr><th>Ad Soyad</th><th>Doğum Tarihi</th><th>Kan Grubu</th><th></th></tr>
+    </thead>
+    <tbody>
+    @foreach (var p in Model)
+    {
+        <tr>
+            <td>@p.User?.FullName</td>
+            <td>@p.DateOfBirth?.ToString("d")</td>
+            <td>@p.BloodType</td>
+            <td><a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@p.Id">Detay</a></td>
+        </tr>
+    }
+    </tbody>
+</table>

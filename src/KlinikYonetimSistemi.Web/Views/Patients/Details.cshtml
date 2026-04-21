@@ -1,0 +1,62 @@
+@model Patient
+@{
+    ViewData["Title"] = Model.User?.FullName ?? "Hasta";
+    var canWrite = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.Doctor);
+}
+<h2>@ViewData["Title"]</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">E-posta</dt>
+    <dd class="col-sm-9">@Model.User?.Email</dd>
+    <dt class="col-sm-3">Doğum Tarihi</dt>
+    <dd class="col-sm-9">@Model.DateOfBirth?.ToString("d")</dd>
+    <dt class="col-sm-3">Kan Grubu</dt>
+    <dd class="col-sm-9">@Model.BloodType</dd>
+    <dt class="col-sm-3">Alerjiler</dt>
+    <dd class="col-sm-9">@Model.Allergies</dd>
+</dl>
+
+<h3 class="mt-4">Tıbbi Kayıtlar</h3>
+@if (!Model.MedicalRecords.Any())
+{
+    <p class="text-muted">Kayıt bulunmuyor.</p>
+}
+else
+{
+    <table class="table">
+        <thead><tr><th>Tarih</th><th>Tanı</th><th>Tedavi</th><th>Reçete</th></tr></thead>
+        <tbody>
+        @foreach (var r in Model.MedicalRecords.OrderByDescending(r => r.RecordedAt))
+        {
+            <tr>
+                <td>@r.RecordedAt.ToLocalTime().ToString("g")</td>
+                <td>@r.Diagnosis</td>
+                <td>@r.Treatment</td>
+                <td>@r.Prescription</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (canWrite)
+{
+    <h4 class="mt-4">Yeni Tıbbi Kayıt</h4>
+    <form asp-action="AddMedicalRecord" method="post" class="col-md-8">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="patientId" value="@Model.Id" />
+        <div class="mb-2">
+            <label class="form-label">Tanı *</label>
+            <input name="diagnosis" class="form-control" required />
+        </div>
+        <div class="mb-2">
+            <label class="form-label">Tedavi</label>
+            <textarea name="treatment" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="mb-2">
+            <label class="form-label">Reçete</label>
+            <textarea name="prescription" class="form-control" rows="2"></textarea>
+        </div>
+        <button class="btn btn-primary">Kaydet</button>
+    </form>
+}

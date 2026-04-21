@@ -1,0 +1,52 @@
+@model IEnumerable<Appointment>
+@{
+    ViewData["Title"] = "Randevular";
+}
+<h2>@ViewData["Title"]</h2>
+
+@if (User.IsInRole(Roles.Patient))
+{
+    <a class="btn btn-primary mb-3" asp-action="Create">+ Yeni Randevu</a>
+}
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Tarih / Saat</th>
+            <th>Doktor</th>
+            <th>Hasta</th>
+            <th>Durum</th>
+            <th>Süre</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var a in Model)
+    {
+        <tr>
+            <td>@a.ScheduledAt.ToLocalTime().ToString("g")</td>
+            <td>@a.Doctor?.User?.FullName <small class="text-muted">(@a.Doctor?.Specialty?.Name)</small></td>
+            <td>@a.Patient?.User?.FullName</td>
+            <td>
+                @switch (a.Status)
+                {
+                    case AppointmentStatus.Scheduled: <span class="badge bg-secondary">Planlandı</span> break;
+                    case AppointmentStatus.Confirmed: <span class="badge bg-info">Onaylandı</span> break;
+                    case AppointmentStatus.Completed: <span class="badge bg-success">Tamamlandı</span> break;
+                    case AppointmentStatus.Cancelled: <span class="badge bg-danger">İptal</span> break;
+                    case AppointmentStatus.NoShow: <span class="badge bg-warning text-dark">Gelmedi</span> break;
+                }
+            </td>
+            <td>@a.DurationMinutes dk</td>
+            <td>
+                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@a.Id">Detay</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Henüz bir randevu kaydı bulunmuyor.</p>
+}

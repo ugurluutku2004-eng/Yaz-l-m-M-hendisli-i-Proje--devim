@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/KlinikYonetimSistemi.Web/KlinikYonetimSistemi.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/KlinikYonetimSistemi.Tests/KlinikYonetimSistemi.Tests.csproj" />
+  </Folder>
+</Solution>

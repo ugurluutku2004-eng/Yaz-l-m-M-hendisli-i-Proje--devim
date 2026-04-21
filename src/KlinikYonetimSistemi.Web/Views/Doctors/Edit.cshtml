@@ -1,0 +1,34 @@
+@model Doctor
+@{
+    ViewData["Title"] = "Doktor Profili Düzenle";
+    var specialties = ViewBag.Specialties as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+}
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post" class="col-md-6">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label class="form-label">Uzmanlık</label>
+        <select asp-for="SpecialtyId" class="form-select" asp-items="specialties"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="LicenseNumber" class="form-label">Diploma No</label>
+        <input asp-for="LicenseNumber" class="form-control" />
+        <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="YearsOfExperience" class="form-label">Tecrübe (yıl)</label>
+        <input asp-for="YearsOfExperience" class="form-control" />
+        <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Bio" class="form-label">Özgeçmiş</label>
+        <textarea asp-for="Bio" class="form-control" rows="4"></textarea>
+    </div>
+    <button class="btn btn-primary">Kaydet</button>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-link">İptal</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

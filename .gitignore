@@ -1,0 +1,27 @@
+## .NET build outputs
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## SQLite database
+*.db
+*.db-shm
+*.db-wal
+
+## Visual Studio / Rider
+.idea/
+*.DotSettings.user
+
+## Coverage
+TestResults/
+coverage.*
+*.coverage
+
+## Logs
+*.log
+
+## OS
+.DS_Store
+Thumbs.db
