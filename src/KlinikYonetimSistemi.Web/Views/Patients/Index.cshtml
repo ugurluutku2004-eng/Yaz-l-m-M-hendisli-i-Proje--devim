@@ -1,22 +1,49 @@
 @model IEnumerable<Patient>
 @{
     ViewData["Title"] = "Hastalar";
+    ViewData["Subtitle"] = "Kayıtlı hasta listesi";
 }
-<h2>@ViewData["Title"]</h2>
 
-<table class="table table-hover align-middle">
-    <thead>
-        <tr><th>Ad Soyad</th><th>Doğum Tarihi</th><th>Kan Grubu</th><th></th></tr>
-    </thead>
-    <tbody>
-    @foreach (var p in Model)
-    {
-        <tr>
-            <td>@p.User?.FullName</td>
-            <td>@p.DateOfBirth?.ToString("d")</td>
-            <td>@p.BloodType</td>
-            <td><a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@p.Id">Detay</a></td>
-        </tr>
-    }
-    </tbody>
-</table>
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-people"></i>
+        <div>Henüz kayıtlı hasta bulunmuyor.</div>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>Doğum Tarihi</th>
+                    <th>Kan Grubu</th>
+                    <th class="text-end">İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@p.User?.FullName</td>
+                    <td>@(p.DateOfBirth?.ToString("d") ?? "—")</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(p.BloodType))
+                        {
+                            <span class="chip"><i class="bi bi-droplet-fill"></i> @p.BloodType</span>
+                        }
+                        else { <span class="text-muted">—</span> }
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@p.Id">
+                            Detay <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

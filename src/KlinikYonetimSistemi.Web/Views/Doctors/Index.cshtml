@@ -1,35 +1,53 @@
 @model IEnumerable<Doctor>
 @{
     ViewData["Title"] = "Doktorlar";
+    ViewData["Subtitle"] = "Uzman hekim kadromuz ve tecrübeleri";
     var specialties = ViewBag.Specialties as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
 }
-<h2>@ViewData["Title"]</h2>
 
-<form method="get" class="row g-2 mb-3 align-items-end col-md-6">
-    <div class="col">
-        <label class="form-label">Uzmanlık</label>
+<form method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-md-4">
+        <label class="form-label">Uzmanlık alanı</label>
         <select name="specialtyId" class="form-select" asp-items="specialties">
             <option value="">Tümü</option>
         </select>
     </div>
     <div class="col-auto">
-        <button class="btn btn-primary">Filtrele</button>
+        <button class="btn btn-primary">
+            <i class="bi bi-funnel"></i> Filtrele
+        </button>
     </div>
 </form>
 
-<table class="table table-hover align-middle">
-    <thead>
-        <tr><th>Ad Soyad</th><th>Uzmanlık</th><th>Tecrübe</th><th></th></tr>
-    </thead>
-    <tbody>
-    @foreach (var d in Model)
-    {
-        <tr>
-            <td>@d.User?.FullName</td>
-            <td>@d.Specialty?.Name</td>
-            <td>@d.YearsOfExperience yıl</td>
-            <td><a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@d.Id">Detay</a></td>
-        </tr>
-    }
-    </tbody>
-</table>
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="bi bi-person-badge"></i>
+        <div>Bu kriterlere uygun doktor bulunamadı.</div>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var d in Model)
+        {
+            var name = d.User?.FullName ?? "-";
+            var initials = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(p => p[0])).ToUpper();
+            <div class="col-md-6 col-lg-4">
+                <div class="doctor-card">
+                    <div class="avatar-lg">@initials</div>
+                    <h5>@name</h5>
+                    <div class="specialty">@d.Specialty?.Name</div>
+                    <div class="meta mb-3">
+                        <i class="bi bi-patch-check"></i> @d.YearsOfExperience yıl tecrübe
+                    </div>
+                    <div class="mt-auto">
+                        <a class="btn btn-outline-primary btn-sm w-100" asp-action="Details" asp-route-id="@d.Id">
+                            Profili Görüntüle <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

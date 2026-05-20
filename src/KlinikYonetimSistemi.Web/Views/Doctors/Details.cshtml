@@ -1,26 +1,53 @@
 @model Doctor
 @{
     ViewData["Title"] = Model.User?.FullName ?? "Doktor";
-}
-<h2>@ViewData["Title"]</h2>
-<p class="text-muted">@Model.Specialty?.Name • @Model.YearsOfExperience yıl tecrübe</p>
-
-<dl class="row">
-    <dt class="col-sm-3">Diploma No</dt>
-    <dd class="col-sm-9">@Model.LicenseNumber</dd>
-    <dt class="col-sm-3">E-posta</dt>
-    <dd class="col-sm-9">@Model.User?.Email</dd>
-    <dt class="col-sm-3">Özgeçmiş</dt>
-    <dd class="col-sm-9">@Model.Bio</dd>
-</dl>
-
-@{
+    ViewData["Subtitle"] = $"{Model.Specialty?.Name} · {Model.YearsOfExperience} yıl tecrübe";
     var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     var canEdit = User.IsInRole(Roles.Admin) || Model.UserId == userId;
+    var name = Model.User?.FullName ?? "";
+    var initials = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(p => p[0])).ToUpper();
 }
 
-@if (canEdit)
-{
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">Düzenle</a>
-}
-<a asp-action="Index" class="btn btn-link">← Geri</a>
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="avatar-lg mx-auto" style="width:80px;height:80px;font-size:1.6rem;border-radius:50%;background:var(--brand-100);color:var(--brand-500);display:inline-flex;align-items:center;justify-content:center;font-weight:700;border:1px solid var(--brand-200);margin-bottom:1rem">
+                    @initials
+                </div>
+                <h5 class="mb-1">@name</h5>
+                <div class="text-muted mb-3">@Model.Specialty?.Name</div>
+                <span class="chip"><i class="bi bi-patch-check"></i> @Model.YearsOfExperience yıl tecrübe</span>
+
+                @if (canEdit)
+                {
+                    <div class="mt-4">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-pencil"></i> Profili Düzenle
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Profil Bilgileri</h5>
+                <dl class="kv-grid row mb-0">
+                    <dt class="col-sm-4">Diploma No</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.LicenseNumber) ? "—" : Model.LicenseNumber)</dd>
+                    <dt class="col-sm-4">E-posta</dt>
+                    <dd class="col-sm-8">@Model.User?.Email</dd>
+                    <dt class="col-sm-4">Özgeçmiş</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.Bio) ? "—" : Model.Bio)</dd>
+                </dl>
+            </div>
+        </div>
+
+        <a asp-action="Index" class="btn btn-link mt-3">
+            <i class="bi bi-arrow-left"></i> Doktor listesine dön
+        </a>
+    </div>
+</div>

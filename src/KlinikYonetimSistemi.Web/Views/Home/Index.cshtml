@@ -2,47 +2,54 @@
     ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="jumbotron p-5 bg-light rounded-3 mb-4">
-    <h1 class="display-5">Klinik Yönetim Sistemine Hoş Geldiniz</h1>
-    <p class="lead">Hastalar, doktorlar ve klinik yöneticileri için entegre bir randevu ve hasta takip platformu.</p>
-    <hr class="my-4">
-    <p>Rolünüze göre randevu oluşturabilir, takviminizi yönetebilir ve tıbbi kayıtlara erişebilirsiniz.</p>
-    <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Login">Giriş Yap</a>
-    <a class="btn btn-outline-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">Kayıt Ol</a>
+<section class="hero">
+    <span class="eyebrow"><i class="bi bi-activity"></i> Klinik Yönetim Platformu</span>
+    <h1>Randevu ve hasta takibi, tek bir sade panelde.</h1>
+    <p class="lead">
+        Hastalar, doktorlar ve yöneticiler için uçtan uca bir klinik iş akışı.
+        Hızlı arayüz, net veri, güvenli erişim.
+    </p>
+    <div class="d-flex flex-wrap gap-2 mt-4">
+        <a class="btn btn-primary btn-lg" asp-area="Identity" asp-page="/Account/Login">
+            <i class="bi bi-box-arrow-in-right"></i> Giriş Yap
+        </a>
+        <a class="btn btn-outline-primary btn-lg" asp-area="Identity" asp-page="/Account/Register">
+            <i class="bi bi-person-plus"></i> Kayıt Ol
+        </a>
+    </div>
+</section>
+
+<div class="section-title"><i class="bi bi-grid"></i> Rollere göre neler yapabilirsiniz?</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="role-card">
+            <div class="role-icon"><i class="bi bi-person-heart"></i></div>
+            <h5>Hasta</h5>
+            <p>Uzmanlık alanına göre doktor bulun, uygun saatlerde online randevu oluşturun, geçmiş muayene kayıtlarınızı inceleyin.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="role-card">
+            <div class="role-icon"><i class="bi bi-clipboard2-pulse"></i></div>
+            <h5>Doktor</h5>
+            <p>Günlük randevu takviminizi görüntüleyin, muayene sonrası tıbbi kayıt ve reçete ekleyin, randevu durumunu güncelleyin.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="role-card">
+            <div class="role-icon"><i class="bi bi-sliders2"></i></div>
+            <h5>Yönetici</h5>
+            <p>Kullanıcı ve rol yönetimi, sistem istatistikleri, tüm randevuların raporlanması ve klinik işleyiş takibi.</p>
+        </div>
+    </div>
 </div>
 
-<div class="row g-3">
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Hasta</h5>
-                <p class="card-text">Uzmanlık alanına göre doktor bulun, uygun saatlerde online randevu oluşturun, geçmiş muayene kayıtlarınızı inceleyin.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Doktor</h5>
-                <p class="card-text">Günlük randevu takviminizi görüntüleyin, muayene sonrası tıbbi kayıt ve reçete ekleyin, randevu durumunu güncelleyin.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title">Yönetici</h5>
-                <p class="card-text">Kullanıcı ve rol yönetimi, sistem istatistikleri, tüm randevuların raporlanması ve klinik işleyiş takibi.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="alert alert-info mt-4">
-    <strong>Demo Hesaplar:</strong>
-    <ul class="mb-0">
-        <li>Yönetici: <code>admin@klinik.local</code> / <code>Admin!234</code></li>
-        <li>Doktor: <code>doktor@klinik.local</code> / <code>Doktor!234</code></li>
-        <li>Hasta: <code>hasta@klinik.local</code> / <code>Hasta!234</code></li>
+<div class="demo-box">
+    <div class="demo-title"><i class="bi bi-key"></i> Demo Hesaplar</div>
+    <ul>
+        <li><strong style="color:var(--ink-900)">Yönetici</strong> — <code>admin@klinik.local</code> / <code>Admin!234</code></li>
+        <li><strong style="color:var(--ink-900)">Doktor</strong> — <code>doktor@klinik.local</code> / <code>Doktor!234</code></li>
+        <li><strong style="color:var(--ink-900)">Hasta</strong> — <code>hasta@klinik.local</code> / <code>Hasta!234</code></li>
     </ul>
 </div>

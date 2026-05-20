@@ -1,86 +1,151 @@
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
+@{
+    var isAuth = SignInManager.IsSignedIn(User);
+    var fullName = "";
+    var roleBadge = "";
+    if (isAuth)
+    {
+        var u = await UserManager.GetUserAsync(User);
+        fullName = u?.FullName ?? User.Identity?.Name ?? "";
+        var roles = User.IsInRole(Roles.Admin) ? "Yönetici"
+                  : User.IsInRole(Roles.Doctor) ? "Doktor"
+                  : User.IsInRole(Roles.Patient) ? "Hasta" : "";
+        roleBadge = roles;
+    }
+    string Initials(string n) {
+        if (string.IsNullOrWhiteSpace(n)) return "?";
+        var parts = n.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, System.Math.Min(2, parts[0].Length)).ToUpper();
+        return (parts[0][0].ToString() + parts[^1][0]).ToUpper();
+    }
+    string ActiveIf(string controller, string? action = null) {
+        var cur = ViewContext.RouteData.Values["controller"]?.ToString();
+        var curAct = ViewContext.RouteData.Values["action"]?.ToString();
+        if (string.Equals(cur, controller, StringComparison.OrdinalIgnoreCase)
+            && (action is null || string.Equals(curAct, action, StringComparison.OrdinalIgnoreCase)))
+            return "active";
+        return "";
+    }
+}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Klinik Yönetim Sistemi</title>
+    <title>@ViewData["Title"] · Klinik Yönetim Sistemi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;550;600;650;700&family=Geist+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-primary mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">🏥 Klinik Yönetim Sistemi</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-expanded="false" aria-label="Menü">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
-                        </li>
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-controller="Doctors" asp-action="Index">Doktorlar</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-controller="Appointments" asp-action="Index">Randevularım</a>
-                            </li>
-                            @if (User.IsInRole(Roles.Patient))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" asp-controller="Appointments" asp-action="Create">Randevu Al</a>
-                                </li>
-                            }
-                            @if (User.IsInRole(Roles.Doctor) || User.IsInRole(Roles.Admin))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" asp-controller="Patients" asp-action="Index">Hastalar</a>
-                                </li>
-                            }
-                            @if (User.IsInRole(Roles.Admin))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" asp-controller="Admin" asp-action="Index">Yönetim</a>
-                                </li>
-                            }
-                        }
-                    </ul>
-                    <partial name="_LoginPartial" />
+@if (isAuth)
+{
+    <div class="app-shell">
+        <aside class="sidebar d-flex flex-column">
+            <a href="@Url.Action("Index", "Home")" class="sidebar-brand">
+                <i class="bi bi-heart-pulse-fill"></i>
+                <span>Klinik YS</span>
+            </a>
+
+            <div class="sidebar-section">Menü</div>
+            <ul class="sidebar-nav">
+                <li><a class="@ActiveIf("Home","Index")" href="@Url.Action("Index","Home")"><i class="bi bi-house-door"></i> Ana Sayfa</a></li>
+                <li><a class="@ActiveIf("Appointments")" href="@Url.Action("Index","Appointments")"><i class="bi bi-calendar-check"></i> Randevular</a></li>
+                @if (User.IsInRole(Roles.Patient))
+                {
+                    <li><a class="@ActiveIf("Appointments","Create")" href="@Url.Action("Create","Appointments")"><i class="bi bi-plus-circle"></i> Randevu Al</a></li>
+                }
+                <li><a class="@ActiveIf("Doctors")" href="@Url.Action("Index","Doctors")"><i class="bi bi-person-badge"></i> Doktorlar</a></li>
+                @if (User.IsInRole(Roles.Doctor) || User.IsInRole(Roles.Admin))
+                {
+                    <li><a class="@ActiveIf("Patients")" href="@Url.Action("Index","Patients")"><i class="bi bi-people"></i> Hastalar</a></li>
+                }
+            </ul>
+
+            @if (User.IsInRole(Roles.Admin))
+            {
+                <div class="sidebar-section">Yönetim</div>
+                <ul class="sidebar-nav">
+                    <li><a class="@ActiveIf("Admin","Index")" href="@Url.Action("Index","Admin")"><i class="bi bi-speedometer2"></i> Panel</a></li>
+                    <li><a class="@ActiveIf("Admin","Users")" href="@Url.Action("Users","Admin")"><i class="bi bi-person-gear"></i> Kullanıcılar</a></li>
+                </ul>
+            }
+
+            <div class="sidebar-user mt-auto">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="avatar">@Initials(fullName)</div>
+                    <div class="flex-grow-1 min-w-0">
+                        <div class="fw-semibold text-truncate" title="@fullName">@fullName</div>
+                        <div class="text-muted" style="font-size:.75rem">@roleBadge</div>
+                    </div>
+                </div>
+                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                    <button type="submit" class="btn btn-secondary btn-sm w-100">
+                        <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <div class="topbar">
+                <div>
+                    <h1>@(ViewData["Title"] ?? "")</h1>
+                    @if (ViewData["Subtitle"] is string sub) { <div class="topbar-sub">@sub</div> }
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="chip"><i class="bi bi-shield-check"></i> @roleBadge</span>
                 </div>
             </div>
+            <main class="content">
+                @if (TempData["Success"] is string s)
+                {
+                    <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> @s</div>
+                }
+                @if (TempData["Error"] is string e)
+                {
+                    <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @e</div>
+                }
+                @RenderBody()
+            </main>
+            <footer class="site-footer">
+                © 2026 Klinik Yönetim Sistemi · Utku Uğurlu
+            </footer>
+        </div>
+    </div>
+}
+else
+{
+    <div class="public-shell">
+        <nav class="public-nav">
+            <a href="@Url.Action("Index","Home")" class="brand">
+                <i class="bi bi-heart-pulse-fill"></i>
+                <span>Klinik Yönetim Sistemi</span>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a class="btn btn-outline-primary btn-sm" asp-area="Identity" asp-page="/Account/Login">Giriş</a>
+                <a class="btn btn-primary btn-sm" asp-area="Identity" asp-page="/Account/Register">Kayıt Ol</a>
+            </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+        <main class="content" style="padding:2rem 2rem 3rem">
             @if (TempData["Success"] is string s)
             {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @s
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
-                </div>
+                <div class="alert alert-success"><i class="bi bi-check-circle-fill"></i> @s</div>
             }
             @if (TempData["Error"] is string e)
             {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @e
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
-                </div>
+                <div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @e</div>
             }
             @RenderBody()
         </main>
+        <footer class="site-footer">© 2026 Klinik Yönetim Sistemi · Utku Uğurlu</footer>
     </div>
-
-    <footer class="border-top footer text-muted mt-4 py-3">
-        <div class="container text-center">
-            &copy; 2026 - Klinik Yönetim Sistemi - Bitirme Projesi (Utku Uğurlu)
-        </div>
-    </footer>
+}
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

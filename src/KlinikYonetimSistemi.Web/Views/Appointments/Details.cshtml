@@ -1,65 +1,103 @@
 @model Appointment
 @{
     ViewData["Title"] = "Randevu Detayı";
-}
-<h2>@ViewData["Title"]</h2>
-
-<dl class="row">
-    <dt class="col-sm-3">Tarih / Saat</dt>
-    <dd class="col-sm-9">@Model.ScheduledAt.ToLocalTime().ToString("g")</dd>
-
-    <dt class="col-sm-3">Süre</dt>
-    <dd class="col-sm-9">@Model.DurationMinutes dakika</dd>
-
-    <dt class="col-sm-3">Doktor</dt>
-    <dd class="col-sm-9">@Model.Doctor?.User?.FullName (@Model.Doctor?.Specialty?.Name)</dd>
-
-    <dt class="col-sm-3">Hasta</dt>
-    <dd class="col-sm-9">@Model.Patient?.User?.FullName</dd>
-
-    <dt class="col-sm-3">Durum</dt>
-    <dd class="col-sm-9">@Model.Status</dd>
-
-    <dt class="col-sm-3">Başvuru Nedeni</dt>
-    <dd class="col-sm-9">@Model.Reason</dd>
-
-    <dt class="col-sm-3">Doktor Notları</dt>
-    <dd class="col-sm-9">@Model.DoctorNotes</dd>
-</dl>
-
-@if (Model.Status != AppointmentStatus.Completed && Model.Status != AppointmentStatus.Cancelled)
-{
-    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
-        @Html.AntiForgeryToken()
-        <button class="btn btn-danger" onclick="return confirm('Randevu iptal edilsin mi?')">İptal Et</button>
-    </form>
+    ViewData["Subtitle"] = Model.ScheduledAt.ToLocalTime().ToString("dd MMMM yyyy · HH:mm");
+    var canEditDoctor = User.IsInRole(Roles.Doctor) || User.IsInRole(Roles.Admin);
+    var canCancel = Model.Status != AppointmentStatus.Completed && Model.Status != AppointmentStatus.Cancelled;
 }
 
-@if (User.IsInRole(Roles.Doctor) || User.IsInRole(Roles.Admin))
-{
-    <hr />
-    <h4>Durum Güncelle</h4>
-    <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post">
-        @Html.AntiForgeryToken()
-        <div class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label">Yeni Durum</label>
-                <select name="status" class="form-select">
-                    @foreach (var s in Enum.GetValues<AppointmentStatus>())
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="card-title mb-0">Randevu Bilgileri</h5>
+                    @switch (Model.Status)
                     {
-                        <option value="@((int)s)" selected="@(Model.Status == s)">@s</option>
+                        case AppointmentStatus.Scheduled: <span class="badge badge-status badge-scheduled"><i class="bi bi-clock"></i> Planlandı</span> break;
+                        case AppointmentStatus.Confirmed: <span class="badge badge-status badge-confirmed"><i class="bi bi-check-circle"></i> Onaylandı</span> break;
+                        case AppointmentStatus.Completed: <span class="badge badge-status badge-completed"><i class="bi bi-check2-all"></i> Tamamlandı</span> break;
+                        case AppointmentStatus.Cancelled: <span class="badge badge-status badge-cancelled"><i class="bi bi-x-circle"></i> İptal</span> break;
+                        case AppointmentStatus.NoShow:    <span class="badge badge-status badge-noshow"><i class="bi bi-exclamation-triangle"></i> Gelmedi</span> break;
                     }
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label class="form-label">Doktor Notları</label>
-                <input name="doctorNotes" class="form-control" value="@Model.DoctorNotes" />
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary">Güncelle</button>
+                </div>
+                <dl class="kv-grid row mb-0">
+                    <dt class="col-sm-4">Tarih / Saat</dt>
+                    <dd class="col-sm-8">@Model.ScheduledAt.ToLocalTime().ToString("g")</dd>
+
+                    <dt class="col-sm-4">Süre</dt>
+                    <dd class="col-sm-8">@Model.DurationMinutes dakika</dd>
+
+                    <dt class="col-sm-4">Doktor</dt>
+                    <dd class="col-sm-8">
+                        @Model.Doctor?.User?.FullName
+                        <span class="text-muted">· @Model.Doctor?.Specialty?.Name</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Hasta</dt>
+                    <dd class="col-sm-8">@Model.Patient?.User?.FullName</dd>
+
+                    <dt class="col-sm-4">Başvuru Nedeni</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.Reason) ? "—" : Model.Reason)</dd>
+
+                    <dt class="col-sm-4">Doktor Notları</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.DoctorNotes) ? "—" : Model.DoctorNotes)</dd>
+                </dl>
             </div>
         </div>
-    </form>
-}
 
-<a asp-action="Index" class="btn btn-link mt-3">← Geri</a>
+        @if (canEditDoctor)
+        {
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="bi bi-pencil-square"></i> Durum Güncelle</h5>
+                    <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label">Yeni Durum</label>
+                                <select name="status" class="form-select">
+                                    @foreach (var s in Enum.GetValues<AppointmentStatus>())
+                                    {
+                                        <option value="@((int)s)" selected="@(Model.Status == s)">@s</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">Doktor Notları</label>
+                                <input name="doctorNotes" class="form-control" value="@Model.DoctorNotes" />
+                            </div>
+                            <div class="col-md-3">
+                                <button class="btn btn-primary w-100">
+                                    <i class="bi bi-save"></i> Güncelle
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="section-title mt-0"><i class="bi bi-lightning"></i> Hızlı İşlemler</div>
+                <div class="d-grid gap-2">
+                    @if (canCancel)
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-danger w-100" onclick="return confirm('Randevu iptal edilsin mi?')">
+                                <i class="bi bi-x-circle"></i> Randevuyu İptal Et
+                            </button>
+                        </form>
+                    }
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Listeye Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
