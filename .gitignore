@@ -29,3 +29,9 @@ Thumbs.db
 ## Claude Code / agent tooling
 .claude/
 memory/
+
+## Akademik dokumanlar / planlama (repoda tutulmuyor)
+docs/
+src/KlinikYonetimSistemi.Web/PROJECT.md
+src/KlinikYonetimSistemi.Web/DESIGN.md
+/Proje.Dokumanları
