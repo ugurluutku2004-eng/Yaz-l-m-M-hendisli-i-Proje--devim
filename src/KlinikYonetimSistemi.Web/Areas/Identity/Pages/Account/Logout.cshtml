@@ -1,0 +1,23 @@
+@page
+@model LogoutModel
+@{
+    ViewData["Title"] = "Çıkış";
+}
+
+<div class="auth-wrap">
+    <div class="auth-card" style="text-align:center">
+        <div class="auth-head">
+            <div class="auth-logo"><i class="bi bi-box-arrow-right"></i></div>
+            <h1>Çıkış Yapıldı</h1>
+            <p>Hesabınızdan güvenli bir şekilde çıkış yaptınız.</p>
+        </div>
+
+        <a asp-controller="Home" asp-action="Index" asp-area="" class="btn btn-primary w-100">
+            <i class="bi bi-house-door"></i> Ana Sayfaya Dön
+        </a>
+
+        <div class="auth-foot">
+            Tekrar giriş yapmak için <a asp-page="./Login">buraya tıklayın</a>.
+        </div>
+    </div>
+</div>
